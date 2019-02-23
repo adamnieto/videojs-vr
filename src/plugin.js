@@ -52,6 +52,8 @@ class VR extends Plugin {
     this.player_ = player;
     this.bigPlayButtonIndex_ = player.children().indexOf(player.getChild('BigPlayButton')) || 0;
 
+    this.metaFileLines = null; // Adds this part for dealing with metafile for generalized shape
+
     // custom videojs-errors integration boolean
     this.videojsErrorsSupport_ = !!videojs.errors;
 
@@ -222,10 +224,124 @@ class VR extends Plugin {
       this.movieScreen.rotation.y = -Math.PI;
 
       this.scene.add(this.movieScreen);
+    } else if (project == '360_GENERALIZED') {
+      getMetaFile('https://localhost:4443/cube.lt');
     }
 
     this.currentProjection_ = projection;
 
+  }
+
+  /* ======================== Gradstudent's Code========================*/
+  // var container;
+  // var camera, scene, raycaster, renderer, parentTransform;
+  // var view = new THREE.Vector3();
+  // var mouse = new THREE.Vector2();
+  // var radius, theta = 0, gamma = 0;
+  // var currentIntersected;
+  // // my additional parameter
+  // var video, lines, videoCanvas = [], videoContext = [], vTexture = [];
+
+  // init();
+  // animate();
+
+  // function init() {
+  //   container = document.createElement('div');
+  //   document.body.appendChild(container);
+  //   scene = new THREE.Scene();
+  //   scene.background = new THREE.Color(0x000000);
+  //   camera = new THREE.PerspectiveCamera(90, window.innerWidth / window.innerHeight);
+  //   camera.position.set(0, 0, 0);
+  //   parentTransform = new THREE.Object3D();
+
+  //   // load video texture
+  //   video = document.createElement('video');
+  //   video.src = 'https://localhost:4443/cube_sd.mp4';
+  //   video.autoplay = false;
+  //   video.muted = "muted";
+  //   video.load();
+  //   video.play();
+
+  //   // load photo texture
+  //   //var loader = new THREE.TextureLoader();
+  //   //var texture = loader.load('test.jpg');
+  //   /*var texture = new THREE.Texture();
+  //   var image = new Image();
+  //   image.src = 'test.jpg';
+  //   image.onload = function() {
+  //     // testing code
+  //     var canvas = document.createElement('canvas');
+  //     var context = canvas.getContext('2d');
+  //     canvas.height = 640;
+  //     canvas.width = 640;
+  //     context.drawImage(image, 640, 640, 640, 640, 0, 0, 640, 640);
+  //     texture.image = canvas;
+  //     texture.needsUpdate = true;
+  //   }
+  //   var material = new THREE.MeshBasicMaterial({map: texture, overdraw: true});*/
+
+  //   // generate surfaces based on '.lt' file
+  //   var group = new THREE.Group();
+  //   var metaFile = new XMLHttpRequest();
+  //   var test_error = metaFile.open('GET', 'https://localhost:4443/cube.lt', true);
+  //   // console.log("ERROR:",test_error);
+  //   metaFile.onreadystatechange = function () {
+  //     if (metaFile.readyState === 4 || metaFile.status === 200) {
+  //       var text = metaFile.responseText;
+  //       lines = metaFile.responseText.split('\n');
+  //       for (var i = 1; i < lines.length - 1; i++) {
+  //         var line = lines[i].split(':');
+  //         videoCanvas[i] = document.createElement('canvas');
+  //         videoCanvas[i].width = line[0];
+  //         videoCanvas[i].height = line[1];
+  //         videoContext[i] = videoCanvas[i].getContext('2d');
+  //         videoContext[i].fillStyle = '#000000';
+  //         videoContext[i].fillRect(0, 0, videoCanvas[i].width, videoCanvas[i].height);
+  //         vTexture[i] = new THREE.Texture(videoCanvas[i]);
+  //         vTexture[i].minFilter = THREE.LinearFilter;
+  //         vTexture[i].magFilter = THREE.LinearFilter;
+  //         vTexture[i].format = THREE.RGBFormat;
+  //         var vMaterial = new THREE.MeshBasicMaterial({ map: vTexture[i], overdraw: true });
+  //         radius = (Math.tan(Math.PI / 4) / Math.tan(Math.PI * (line[2] / 360))) * (line[0] / 2);
+  //         var geometry = new THREE.PlaneGeometry(line[0], line[1]);
+  //         var plane = new THREE.Mesh(geometry, vMaterial);
+  //         var alpha = THREE.Math.degToRad(line[3]);
+  //         var beta = THREE.Math.degToRad(parseInt(line[4]) + 90);
+  //         var test = new THREE.Vector3();
+  //         test.x = -radius * Math.cos(beta) * Math.cos(alpha);
+  //         test.y = radius * Math.sin(alpha);
+  //         test.z = -radius * Math.sin(beta) * Math.cos(alpha);
+  //         plane.position.set(test.x, test.y, test.z);
+  //         plane.rotation.set(THREE.Math.degToRad(line[3]), -THREE.Math.degToRad(line[4]), THREE.Math.degToRad(line[5]), 'YXZ');
+  //         group.add(plane);
+  //       }
+  //     }
+  //   }
+  //   metaFile.send(null);
+  //   scene.add(group);
+
+  //   raycaster = new THREE.Raycaster();
+  //   raycaster.linePrecision = 3;
+  //   renderer = new THREE.WebGLRenderer({ antialias: true });
+  //   renderer.setPixelRatio(window.devicePixelRatio);
+  //   renderer.setSize(window.innerWidth, window.innerHeight);
+  //   container.appendChild(renderer.domElement);
+  //   document.addEventListener('mousemove', onDocumentMouseMove, false);
+  //   window.addEventListener('resize', onWindowResize, false);
+  // }
+  /* =====================================Grad Students Code =======================================*/
+
+  getMetaFile(filename) {
+    const metaFile = new XMLHttpRequest();
+    const test_error = metaFile.open('GET', filename, true);
+    // console.log("ERROR:",test_error);
+
+    metaFile.onreadystatechange = function() {
+      if (metaFile.readyState === 4 || metaFile.status === 200) {
+      // var text = metaFile.responseText;
+        this.metaFileLines = metaFile.responseText.split('\n');
+      }
+    };
   }
 
   triggerError_(errorObj) {

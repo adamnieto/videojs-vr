@@ -7,23 +7,97 @@
    <link href="../dist/videojs-vr.css" rel="stylesheet">
 </head>
 <body>
-  <video width="640" height="300" id="videojs-vr-player" class="video-js vjs-default-skin" controls playsinline>
-    <source src="../samples/doisethup_cubemap.mp4" type="video/mp4">
-  </video>
+<!-- This helped me solve it https://www.html5rocks.com/en/tutorials/getusermedia/intro/ -->
+<video width="1000" height="500" class="video-js vjs-default-skin" autoplay id="video_player_test" controls playsinline></video>
+  <!-- <video width="640" height="300" id="videojs-vr-player" class="video-js vjs-default-skin" controls playsinline> -->
+    <!-- <source src="../samples/doisethup_cubemap.mp4" type="video/mp4"> -->
+  <!-- </video> -->
   <ul>
     <li><a href="../">return to main example</a></li>
   </ul>
   <script src="../node_modules/video.js/dist/video.js"></script>
   <script src="../dist/videojs-vr.js"></script>
   <script>
+
     (function(window, videojs) {
-      var player = window.player = videojs('videojs-vr-player');
+    /* ========================Added Code=============================*/
+      const constraints = {
+      video: true
+      };
+
+      const video = document.querySelector('video');
+
+      navigator.mediaDevices.getUserMedia(constraints).
+      then((stream) => {
+        video.srcObject = stream
+      });
+      /* ======================================================*/
+      var player = window.player = videojs('video_player_test');
       player.mediainfo = player.mediainfo || {};
       player.mediainfo.projection = '360_CUBE';
 
       // AUTO is the default and looks at mediainfo
-      var vr = window.vr = player.vr({projection: 'AUTO', debug: true, forceCardboard: false});
+      var vr = window.vr = player.vr({projection: '360_CUBE', debug: true, forceCardboard: false});
     }(window, window.videojs));
+  </script>
+  <script>
+//           const videoElement = document.querySelector('video');
+// const audioSelect = document.querySelector('select#audioSource');
+// const videoSelect = document.querySelector('select#videoSource');
+
+// navigator.mediaDevices.enumerateDevices()
+//   .then(gotDevices).then(getStream).catch(handleError);
+
+// audioSelect.onchange = getStream;
+// videoSelect.onchange = getStream;
+
+// function gotDevices(deviceInfos) {
+//   for (let i = 0; i !== deviceInfos.length; ++i) {
+//     const deviceInfo = deviceInfos[i];
+//     const option = document.createElement('option');
+//     option.value = deviceInfo.deviceId;
+//     if (deviceInfo.kind === 'audioinput') {
+//       option.text = deviceInfo.label ||
+//         'microphone ' + (audioSelect.length + 1);
+//       audioSelect.appendChild(option);
+//     } else if (deviceInfo.kind === 'videoinput') {
+//       option.text = deviceInfo.label || 'camera ' +
+//         (videoSelect.length + 1);
+//       videoSelect.appendChild(option);
+//     } else {
+//       console.log('Found another kind of device: ', deviceInfo);
+//     }
+//   }
+// }
+
+// function getStream() {
+//   if (window.stream) {
+//     window.stream.getTracks().forEach(function(track) {
+//       track.stop();
+//     });
+//   }
+
+//   const constraints = {
+//     audio: {
+//       deviceId: {exact: audioSelect.value}
+//     },
+//     video: {
+//       deviceId: {exact: videoSelect.value}
+//     }
+//   };
+
+//   navigator.mediaDevices.getUserMedia(constraints).
+//     then(gotStream).catch(handleError);
+// }
+
+// function gotStream(stream) {
+//   window.stream = stream; // make stream available to console
+//   videoElement.srcObject = stream;
+// }
+
+// function handleError(error) {
+//   console.error('Error: ', error);
+// }
   </script>
 </body>
 </html>
